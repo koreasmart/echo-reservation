@@ -95,6 +95,25 @@ def parse_auto_fill(response: str):
         return data
     return None
 
+def find_slots_for_date(dt: date):
+    """특정 날짜의 예약 가능한 프로그램 슬롯 찾기"""
+    target_str = dt.strftime("%Y-%m-%d")
+    results = []
+    for p in eco_data.get("programs", []):
+        for slot in p.get("availableSlots", []):
+            if slot["date"] == target_str:
+                remain = slot["capacity"] - slot["reserved"]
+                results.append({
+                    "programId": p["programId"],
+                    "programName": p["name"],
+                    "target": p["target"],
+                    "time": slot["time"],
+                    "capacity": slot["capacity"],
+                    "reserved": slot["reserved"],
+                    "remain": remain,
+                })
+    return results
+
 # -------------------------------
 # 3. Streamlit 화면 구성
 # -------------------------------
@@ -158,6 +177,15 @@ if "chat_history" not in st.session_state:
 if "auto_fill_data" not in st.session_state:
     st.session_state.auto_fill_data = None
 
+if "current_year" not in st.session_state:
+    st.session_state.current_year = 2025
+
+if "current_month" not in st.session_state:
+    st.session_state.current_month = 9
+
+if "selected_date" not in st.session_state:
+    st.session_state.selected_date = None
+
 # 메인 타이틀
 st.markdown('<div class="main-title">단체 예약 예약 신청</div>', unsafe_allow_html=True)
 
@@ -166,11 +194,32 @@ col1, col2 = st.columns([1.5, 1])
 
 with col1:
     # 캘린더 섹션
-    st.markdown("### 2025. 09")
+    col_prev, col_title, col_next = st.columns([0.5, 3, 0.5])
+    
+    with col_prev:
+        if st.button("◀", key="prev_month"):
+            if st.session_state.current_month == 1:
+                st.session_state.current_month = 12
+                st.session_state.current_year -= 1
+            else:
+                st.session_state.current_month -= 1
+            st.rerun()
+    
+    with col_title:
+        st.markdown(f"<h3 style='text-align: center;'>{st.session_state.current_year}. {st.session_state.current_month:02d}</h3>", unsafe_allow_html=True)
+    
+    with col_next:
+        if st.button("▶", key="next_month"):
+            if st.session_state.current_month == 12:
+                st.session_state.current_month = 1
+                st.session_state.current_year += 1
+            else:
+                st.session_state.current_month += 1
+            st.rerun()
     
     # 간단한 캘린더 표시
-    year = 2025
-    month = 9
+    year = st.session_state.current_year
+    month = st.session_state.current_month
     cal = calendar.monthcalendar(year, month)
     
     # 요일 헤더
@@ -197,10 +246,38 @@ with col1:
                 if day == 0:
                     st.write("")
                 else:
+                    # 선택된 날짜 확인
+                    is_selected = (st.session_state.selected_date and 
+                                   st.session_state.selected_date.year == year and 
+                                   st.session_state.selected_date.month == month and 
+                                   st.session_state.selected_date.day == day)
+                    
                     if day in available_dates:
-                        st.markdown(f"<div style='text-align: center; background-color: #e3f2fd; padding: 5px; border-radius: 50%; margin: 2px;'>🔵 {day}</div>", unsafe_allow_html=True)
+                        # 예약 가능한 날짜
+                        if is_selected:
+                            # 선택된 날짜
+                            if st.button(f"🔵 {day}", key=f"date_{year}_{month}_{day}", 
+                                       use_container_width=True,
+                                       type="primary"):
+                                st.session_state.selected_date = date(year, month, day)
+                                st.rerun()
+                        else:
+                            # 선택되지 않은 예약 가능 날짜
+                            if st.button(f"🔵 {day}", key=f"date_{year}_{month}_{day}", 
+                                       use_container_width=True):
+                                st.session_state.selected_date = date(year, month, day)
+                                st.rerun()
                     else:
-                        st.markdown(f"<div style='text-align: center; padding: 5px;'>{day}</div>", unsafe_allow_html=True)
+                        # 예약 불가능한 날짜
+                        st.markdown(f"<div style='text-align: center; padding: 5px; color: #999;'>{day}</div>", unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # 선택된 날짜 표시
+    if st.session_state.selected_date:
+        st.info(f"📅 선택된 날짜: {st.session_state.selected_date.strftime('%Y년 %m월 %d일')}")
+    else:
+        st.warning("⚠️ 캘린더에서 날짜를 먼저 선택해 주세요.")
     
     st.markdown("---")
     
@@ -208,17 +285,20 @@ with col1:
     with st.form("reservation_form"):
         st.markdown('<div class="section-title">신청자 정보</div>', unsafe_allow_html=True)
         
-        # 자동 입력된 데이터 사용
-        default_date = None
+        # 자동 입력된 데이터 또는 선택된 날짜 사용
+        form_date = st.session_state.selected_date
+        
         if st.session_state.auto_fill_data:
             date_str = st.session_state.auto_fill_data.get("DATE")
             if date_str:
-                default_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                form_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                st.session_state.selected_date = form_date
         
-        selected_date = st.date_input(
-            "방문 희망일", 
-            value=default_date if default_date else date.today()
-        )
+        if not form_date:
+            st.warning("⚠️ 먼저 캘린더에서 날짜를 선택해 주세요.")
+            st.stop()
+        
+        st.markdown(f"**선택된 방문일**: {form_date.strftime('%Y년 %m월 %d일')}")
         
         col_name, col_contact = st.columns(2)
         with col_name:
@@ -236,25 +316,7 @@ with col1:
         st.markdown("**프로그램 선택**")
         
         # 선택된 날짜의 프로그램 찾기
-        def find_slots_for_date(dt: date):
-            target_str = dt.strftime("%Y-%m-%d")
-            results = []
-            for p in eco_data.get("programs", []):
-                for slot in p.get("availableSlots", []):
-                    if slot["date"] == target_str:
-                        remain = slot["capacity"] - slot["reserved"]
-                        results.append({
-                            "programId": p["programId"],
-                            "programName": p["name"],
-                            "target": p["target"],
-                            "time": slot["time"],
-                            "capacity": slot["capacity"],
-                            "reserved": slot["reserved"],
-                            "remain": remain,
-                        })
-            return results
-        
-        slots = find_slots_for_date(selected_date)
+        slots = find_slots_for_date(form_date)
         
         if slots:
             options = []
@@ -320,15 +382,16 @@ with col1:
                 st.success(
                     f"✅ 예약 신청이 완료되었습니다!\n\n"
                     f"**예약 정보**\n"
-                    f"- 방문일: {selected_date.strftime('%Y년 %m월 %d일')}\n"
+                    f"- 방문일: {form_date.strftime('%Y년 %m월 %d일')}\n"
                     f"- 프로그램: {selected_program}\n"
                     f"- 단체명: {org_name}\n"
                     f"- 인원: {people}명\n"
                     f"- 담당자: {representative}\n\n"
                     f"※ 예약 확정은 담당자 검토 후 연락드리겠습니다."
                 )
-                # 자동 입력 데이터 초기화
+                # 자동 입력 데이터 및 선택된 날짜 초기화
                 st.session_state.auto_fill_data = None
+                st.session_state.selected_date = None
 
 with col2:
     st.markdown('<div class="section-title">AI 예약 상담 챗봇 🤖</div>', unsafe_allow_html=True)
