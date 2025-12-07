@@ -11,6 +11,7 @@ from openai import OpenAI
 # 환경변수 OPENAI_API_KEY를 사용합니다.
 # (bash/zsh)  export OPENAI_API_KEY="sk-xxxx"
 # (PowerShell) $env:OPENAI_API_KEY="sk-xxxx"
+api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI()
 
 
