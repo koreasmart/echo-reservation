@@ -1,0 +1,175 @@
+{
+    "centerName": "○○시 자연생태관",
+    "visitRules": {
+        "maxPeoplePerTeam": 30,
+        "minPeoplePerTeam": 5,
+        "reservationDeadlineHours": 24
+    },
+    "programs": [
+        {
+            "programId": "P001",
+            "name": "숲 생태 탐방",
+            "description": "해설사와 함께 가을 숲 속의 식물과 곤충을 관찰하는 기본 생태 해설 프로그램입니다.",
+            "target": "초등학생 이상",
+            "durationMinutes": 90,
+            "availableSlots": [
+                {
+                    "date": "2025-09-06",
+                    "time": "10:00",
+                    "capacity": 30,
+                    "reserved": 12
+                },
+                {
+                    "date": "2025-09-06",
+                    "time": "14:00",
+                    "capacity": 30,
+                    "reserved": 25
+                },
+                {
+                    "date": "2025-09-13",
+                    "time": "10:00",
+                    "capacity": 30,
+                    "reserved": 8
+                },
+                {
+                    "date": "2025-09-20",
+                    "time": "10:00",
+                    "capacity": 30,
+                    "reserved": 5
+                }
+            ]
+        },
+        {
+            "programId": "P002",
+            "name": "습지 곤충 관찰",
+            "description": "습지 환경에 서식하는 잠자리, 물방개 등 곤충을 관찰하며 서식지 보전의 중요성을 배우는 프로그램입니다.",
+            "target": "중학생 이상",
+            "durationMinutes": 60,
+            "availableSlots": [
+                {
+                    "date": "2025-09-07",
+                    "time": "11:00",
+                    "capacity": 20,
+                    "reserved": 10
+                },
+                {
+                    "date": "2025-09-14",
+                    "time": "11:00",
+                    "capacity": 20,
+                    "reserved": 18
+                },
+                {
+                    "date": "2025-09-21",
+                    "time": "11:00",
+                    "capacity": 20,
+                    "reserved": 6
+                }
+            ]
+        },
+        {
+            "programId": "P003",
+            "name": "유아 숲 놀이 교실",
+            "description": "유아 대상으로 숲에서 자연물을 활용한 오감 놀이와 기초 생태 체험을 진행합니다.",
+            "target": "만 4~7세 유아 및 보호자 동반",
+            "durationMinutes": 60,
+            "availableSlots": [
+                {
+                    "date": "2025-09-03",
+                    "time": "10:30",
+                    "capacity": 15,
+                    "reserved": 9
+                },
+                {
+                    "date": "2025-09-10",
+                    "time": "10:30",
+                    "capacity": 15,
+                    "reserved": 15
+                },
+                {
+                    "date": "2025-09-17",
+                    "time": "10:30",
+                    "capacity": 15,
+                    "reserved": 7
+                },
+                {
+                    "date": "2025-09-24",
+                    "time": "10:30",
+                    "capacity": 15,
+                    "reserved": 5
+                }
+            ]
+        },
+        {
+            "programId": "P004",
+            "name": "야간 생태 관찰",
+            "description": "저녁 시간대에 활동하는 곤충과 양서류, 야간 조류 등을 관찰하는 심화형 프로그램입니다.",
+            "target": "중학생 이상 및 성인",
+            "durationMinutes": 120,
+            "availableSlots": [
+                {
+                    "date": "2025-09-12",
+                    "time": "19:00",
+                    "capacity": 25,
+                    "reserved": 20
+                },
+                {
+                    "date": "2025-09-19",
+                    "time": "19:00",
+                    "capacity": 25,
+                    "reserved": 14
+                },
+                {
+                    "date": "2025-09-26",
+                    "time": "19:00",
+                    "capacity": 25,
+                    "reserved": 5
+                }
+            ]
+        },
+        {
+            "programId": "P005",
+            "name": "하천 생태 모니터링",
+            "description": "하천 수질과 서식 생물을 조사하며 생태계 건강성을 직접 측정해 보는 탐구형 프로그램입니다.",
+            "target": "고등학생 이상 및 일반 시민",
+            "durationMinutes": 120,
+            "availableSlots": [
+                {
+                    "date": "2025-09-05",
+                    "time": "14:00",
+                    "capacity": 20,
+                    "reserved": 11
+                },
+                {
+                    "date": "2025-09-19",
+                    "time": "14:00",
+                    "capacity": 20,
+                    "reserved": 17
+                },
+                {
+                    "date": "2025-09-27",
+                    "time": "10:00",
+                    "capacity": 20,
+                    "reserved": 4
+                }
+            ]
+        }
+    ],
+    "faq": [
+        {
+            "q": "예약은 언제까지 가능한가요?",
+            "a": "각 프로그램은 방문 예정일 1일 전까지 온라인 예약이 가능합니다. 당일 현장 접수는 상황에 따라 제한될 수 있습니다."
+        },
+        {
+            "q": "주차가 가능한가요?",
+            "a": "자연생태관 내 무료 주차장이 있으며, 단체버스는 사전 문의 후 이용해 주세요."
+        },
+        {
+            "q": "우천 시 프로그램은 어떻게 되나요?",
+            "a": "우천 시 일부 야외 프로그램은 실내 대체 프로그램으로 변경될 수 있으며, 취소가 필요한 경우 사전에 안내드립니다."
+        },
+        {
+            "q": "단체 해설 예약 최소 인원은 어떻게 되나요?",
+            "a": "단체 해설 예약은 최소 5인 이상부터 신청 가능하며, 30인 이상일 경우 2개 조로 나누어 운영됩니다."
+        }
+    ]
+}
