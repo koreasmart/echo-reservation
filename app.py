@@ -189,15 +189,18 @@ if "selected_date" not in st.session_state:
 # 메인 타이틀
 st.markdown('<div class="main-title">단체 예약 예약 신청</div>', unsafe_allow_html=True)
 
-# 두 개의 컬럼으로 레이아웃 구성
-col1, col2 = st.columns([1.5, 1])
+# 두 개의 컬럼으로 레이아웃 구성 (간격 추가)
+col1, col2 = st.columns([1.5, 1], gap="large")
 
 with col1:
     # 캘린더 섹션
-    col_prev, col_title, col_next = st.columns([0.5, 3, 0.5])
+    st.markdown("### 날짜 선택")
     
-    with col_prev:
-        if st.button("◀", key="prev_month"):
+    # 월 네비게이션을 캘린더 위에 배치
+    col_month_nav = st.columns([0.3, 2.4, 0.3])
+    
+    with col_month_nav[0]:
+        if st.button("◀", key="prev_month", use_container_width=True):
             if st.session_state.current_month == 1:
                 st.session_state.current_month = 12
                 st.session_state.current_year -= 1
@@ -205,17 +208,19 @@ with col1:
                 st.session_state.current_month -= 1
             st.rerun()
     
-    with col_title:
-        st.markdown(f"<h3 style='text-align: center;'>{st.session_state.current_year}. {st.session_state.current_month:02d}</h3>", unsafe_allow_html=True)
+    with col_month_nav[1]:
+        st.markdown(f"<h3 style='text-align: center; margin: 0;'>{st.session_state.current_year}. {st.session_state.current_month:02d}</h3>", unsafe_allow_html=True)
     
-    with col_next:
-        if st.button("▶", key="next_month"):
+    with col_month_nav[2]:
+        if st.button("▶", key="next_month", use_container_width=True):
             if st.session_state.current_month == 12:
                 st.session_state.current_month = 1
                 st.session_state.current_year += 1
             else:
                 st.session_state.current_month += 1
             st.rerun()
+    
+    st.markdown("<br>", unsafe_allow_html=True)
     
     # 간단한 캘린더 표시
     year = st.session_state.current_year
@@ -253,7 +258,7 @@ with col1:
                                    st.session_state.selected_date.day == day)
                     
                     if day in available_dates:
-                        # 예약 가능한 날짜
+                        # 예약 가능한 날짜만 버튼으로 표시
                         if is_selected:
                             # 선택된 날짜
                             if st.button(f"🔵 {day}", key=f"date_{year}_{month}_{day}", 
@@ -268,20 +273,18 @@ with col1:
                                 st.session_state.selected_date = date(year, month, day)
                                 st.rerun()
                     else:
-                        # 예약 불가능한 날짜
-                        st.markdown(f"<div style='text-align: center; padding: 5px; color: #999;'>{day}</div>", unsafe_allow_html=True)
+                        # 예약 불가능한 날짜는 텍스트로만 표시
+                        st.markdown(f"<div style='text-align: center; padding: 8px; color: #ccc;'>{day}</div>", unsafe_allow_html=True)
     
     st.markdown("---")
     
     # 선택된 날짜 표시
     if st.session_state.selected_date:
-        st.info(f"📅 선택된 날짜: {st.session_state.selected_date.strftime('%Y년 %m월 %d일')}")
-    else:
-        st.warning("⚠️ 캘린더에서 날짜를 먼저 선택해 주세요.")
+        st.success(f"📅 선택된 날짜: {st.session_state.selected_date.strftime('%Y년 %m월 %d일')}")
     
     st.markdown("---")
     
-    # 예약 폼
+    # 예약 폼 (날짜 선택 여부와 관계없이 항상 표시)
     with st.form("reservation_form"):
         st.markdown('<div class="section-title">신청자 정보</div>', unsafe_allow_html=True)
         
@@ -294,11 +297,8 @@ with col1:
                 form_date = datetime.strptime(date_str, "%Y-%m-%d").date()
                 st.session_state.selected_date = form_date
         
-        if not form_date:
-            st.warning("⚠️ 먼저 캘린더에서 날짜를 선택해 주세요.")
-            st.stop()
-        
-        st.markdown(f"**선택된 방문일**: {form_date.strftime('%Y년 %m월 %d일')}")
+        if form_date:
+            st.markdown(f"**선택된 방문일**: {form_date.strftime('%Y년 %m월 %d일')}")
         
         col_name, col_contact = st.columns(2)
         with col_name:
@@ -315,8 +315,11 @@ with col1:
         # 프로그램 선택
         st.markdown("**프로그램 선택**")
         
-        # 선택된 날짜의 프로그램 찾기
-        slots = find_slots_for_date(form_date)
+        # 선택된 날짜가 있을 때만 프로그램 로드
+        if form_date:
+            slots = find_slots_for_date(form_date)
+        else:
+            slots = []
         
         if slots:
             options = []
@@ -344,7 +347,10 @@ with col1:
                 index=selected_index
             )
         else:
-            st.info("선택한 날짜에 예약 가능한 프로그램이 없습니다.")
+            if form_date:
+                st.info("선택한 날짜에 예약 가능한 프로그램이 없습니다.")
+            else:
+                st.info("날짜를 선택하면 예약 가능한 프로그램이 표시됩니다.")
             selected_program = None
         
         # 인원 선택
@@ -372,7 +378,9 @@ with col1:
         submitted = st.form_submit_button("신청하기", use_container_width=True)
         
         if submitted:
-            if not selected_program:
+            if not form_date:
+                st.error("캘린더에서 날짜를 먼저 선택해 주세요.")
+            elif not selected_program:
                 st.error("프로그램을 선택해 주세요.")
             elif not org_name or not contact or not representative:
                 st.error("필수 신청자 정보를 모두 입력해 주세요.")
