@@ -270,7 +270,7 @@ with col1:
                                 st.rerun()
                         else:
                             # 선택되지 않은 예약 가능 날짜
-                            if st.button(f"🟡 {day}", key=f"date_{year}_{month}_{day}", 
+                            if st.button(f"🟢 {day}", key=f"date_{year}_{month}_{day}", 
                                        use_container_width=True):
                                 st.session_state.selected_date = date(year, month, day)
                                 st.rerun()
