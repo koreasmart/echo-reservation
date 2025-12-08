@@ -419,10 +419,10 @@ with col1:
                 selected_slot = None
                 for s in slots:
                     if f"{s['programName']}|{s['time']}" == selected_program:
-                        st.info("슬롯찾음음.")
+                        
                         selected_slot = s
                         break
-                
+                st.info(f"신청 인원: {people}명 잔여 인원: {selected_slot['remain']}")
                 # 잔여 인원 체크
                 if selected_slot and people > selected_slot['remain']:
                     st.error(
