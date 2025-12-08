@@ -381,7 +381,7 @@ with col1:
             f"인원 (명) - 최대 {max_people}명", 
             min_value=1, 
             max_value=max_people,
-            value=default_people,
+            value=min(default_people, max_people),
             step=1
         )
         
@@ -419,6 +419,7 @@ with col1:
                 selected_slot = None
                 for s in slots:
                     if f"{s['programName']}|{s['time']}" == selected_program:
+                        st.info("슬롯찾음음.")
                         selected_slot = s
                         break
                 
