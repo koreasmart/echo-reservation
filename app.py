@@ -40,6 +40,7 @@ def build_system_prompt(eco_data: dict) -> str:
 
 아래 JSON 데이터는 자연생태관의 프로그램, 시간표, 방문 규정을 담고 있어.
 이 JSON 데이터만을 기준으로 대답해야 해. 모르는 정보는 "해당 정보는 제공되지 않습니다."라고 말해.
+그리고 자연생태관 프로그램과 연관되어 체험할 수 있는 동식물들에 대해서는 한국 자연생태관 기준으로만 짧고 명료하게 대답해주고, 자세한 문의사항은 고객센터로 안내해줘.
 
 방문 규칙:
 - 1팀 최소 인원: {min_people}명
@@ -52,7 +53,7 @@ JSON 데이터:
 답변 시 지켜야 할 원칙:
 1. 사용자가 날짜, 인원, 대상(초등학생/중학생 등)을 말하면,
    JSON의 programs와 availableSlots를 보고 가능한 프로그램과 시간을 안내해.
-2. 정원(capacity)와 reserved를 보고, 남은 자리가 없거나 남은 자리를 초과하는 인원이 예약할 경우 "정원 마감"이라고 알려줘.
+2. 정원(capacity)와 reserved를 보고, 남은 자리가 없으면 "정원 마감"이라고 알려줘.
 3. 사용자가 특정 프로그램과 시간을 선택하면, "예약 정보를 폼에 자동으로 입력하시겠습니까?"라고 물어봐.
 4. 사용자가 승인하면 다음 형식으로 정확히 답변해:
    [AUTO_FILL]
@@ -355,7 +356,33 @@ with col1:
         
         # 인원 선택
         st.markdown("**참가 인원**")
-        people = st.number_input("인원 (명)", min_value=1, value=10, step=1)
+        
+        # 최대 인원 설정 (선택된 프로그램의 잔여 인원 또는 기본값)
+        max_people = 100  # 기본 최대값
+        default_people = 10  # 기본 인원
+        
+        if selected_program and slots:
+            for s in slots:
+                if f"{s['programName']}|{s['time']}" == selected_program:
+                    max_people = s['remain']
+                    break
+        
+        # 자동 입력된 인원이 있으면 사용
+        if st.session_state.auto_fill_data:
+            auto_people = st.session_state.auto_fill_data.get("PEOPLE")
+            if auto_people:
+                try:
+                    default_people = int(auto_people)
+                except:
+                    default_people = 10
+        
+        people = st.number_input(
+            f"인원 (명) - 최대 {max_people}명", 
+            min_value=1, 
+            max_value=max_people,
+            value=min(default_people, max_people),
+            step=1
+        )
         
         st.markdown("---")
         
