@@ -381,7 +381,7 @@ with col1:
             f"인원 (명) - 최대 {max_people}명", 
             min_value=1, 
             max_value=max_people,
-            value=min(default_people, max_people),
+            value=default_people,
             step=1
         )
         
