@@ -119,6 +119,8 @@ def find_slots_for_date(dt: date):
                 })
     return results
 
+
+
 # -------------------------------
 # 3. Streamlit 화면 구성
 # -------------------------------
