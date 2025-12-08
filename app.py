@@ -60,6 +60,7 @@ JSON 데이터:
    DATE: YYYY-MM-DD
    PROGRAM: 프로그램명
    TIME: HH:MM-HH:MM
+   PEOPLE: 인원수
    [/AUTO_FILL]
 5. 질문이 FAQ 내용과 관련 있으면, faq 항목을 참고해서 답해.
 6. 항상 한국어로, 친절하고 이해하기 쉽게 설명해.
