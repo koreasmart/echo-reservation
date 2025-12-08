@@ -360,7 +360,7 @@ with col1:
         
         # 인원 선택
         st.markdown("**참가 인원**")
-        people = st.number_input("인원 (명)", min_value=1, value=s['remain'], step=1)
+        people = st.number_input("인원 (명)", min_value=1, value={s['remain']}, step=1)
         
         st.markdown("---")
         
