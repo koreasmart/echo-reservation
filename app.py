@@ -423,7 +423,7 @@ with col1:
                         break
                 
                 # 잔여 인원 체크
-                if selected_slot or people > selected_slot['remain']:
+                if selected_slot and people > selected_slot['remain']:
                     st.error(
                         f"❌ 신청 인원이 잔여 인원을 초과했습니다!\n\n"
                         f"- 신청 인원: {people}명\n"
