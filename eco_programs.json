@@ -2,7 +2,7 @@
     "centerName": "○○시 자연생태관",
     "visitRules": {
         "maxPeoplePerTeam": 30,
-        "minPeoplePerTeam": 5,
+        "minPeoplePerTeam": 2,
         "reservationDeadlineHours": 24
     },
     "programs": [
